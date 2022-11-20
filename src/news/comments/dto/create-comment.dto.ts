@@ -1,4 +1,4 @@
-import {IsInt, IsNumberString, IsOptional, IsString} from "class-validator";
+import { IsArray, IsInt, IsNumberString, IsOptional, IsString } from 'class-validator';
 import {ApiProperty, ApiPropertyOptional} from "@nestjs/swagger";
 
 export class CreateCommentDto {
@@ -17,6 +17,11 @@ export class CreateCommentDto {
     @ApiProperty({type: String})
     @IsString()
     author: string;
+
+    @ApiPropertyOptional()
+    @IsArray()
+    @IsOptional()
+    reply?: CreateCommentDto[];
 }
 
 export type Comments = Record<string | number, CreateCommentDto[]>;

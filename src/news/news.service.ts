@@ -1,7 +1,8 @@
 import {Injectable} from '@nestjs/common';
 import {CreateNewsDto, NewsCreate} from './dto/create-news.dto';
 import {UpdateNewsDto} from './dto/update-news.dto';
-import {getRandomInt} from "../helpers/helpers";
+import {getRandomInt} from "../utils/helpers";
+import { CommentsService } from './comments/comments.service';
 
 @Injectable()
 export class NewsService {
@@ -11,15 +12,18 @@ export class NewsService {
             title: "Первая новость",
             description: "Ура! Наша первая новость",
             author: "Владислав",
-            countView: 12
+            countView: 12,
+            cover:"https://funik.ru/wp-content/uploads/2018/10/17478da42271207e1d86.jpg"
         }
     };
-
+    constructor(private readonly commentsService: CommentsService) {
+    }
     create(createNewsDto: CreateNewsDto): NewsCreate {
         const newId = getRandomInt(1, 10000);
         this.news[newId]={
             ...createNewsDto
         };
+        this.commentsService.addNewsId(newId);
         return this.news;
     }
 

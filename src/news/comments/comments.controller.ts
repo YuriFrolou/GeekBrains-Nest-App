@@ -1,10 +1,9 @@
 import {Body, Controller, Delete, Get, Param, Patch, Post, Res} from '@nestjs/common';
 import {CommentsService} from "./comments.service";
 import {ApiBody, ApiResponse, ApiTags} from "@nestjs/swagger";
-import {CreateNewsDto} from "../dto/create-news.dto";
-import {Response} from "express";
-import {UpdateNewsDto} from "../dto/update-news.dto";
-import {Comments, CreateCommentDto} from "./dto/create-comment.dto";
+import {CreateCommentDto} from "./dto/create-comment.dto";
+import { UpdateCommentDto } from './dto/update-comment.dto';
+import {Response} from 'express';
 
 @Controller('comments')
 export class CommentsController {
@@ -22,6 +21,19 @@ export class CommentsController {
     create(@Param('newsId') newsId:number, @Body() createCommentDto: CreateCommentDto) {
         return this.commentsService.create(newsId, createCommentDto);
     }
+
+    @Post("/:newsId/:commentId")
+    @ApiTags('comments')
+    @ApiBody({type:[CreateCommentDto]})
+    @ApiResponse({
+        status:201,
+        description:'create reply to comment',
+        type:[CreateCommentDto]
+    })
+    createReplyToComment(@Param('newsId') newsId:number,@Param('commentId') commentId:number,  @Body() createCommentDto: CreateCommentDto) {
+        return this.commentsService.create(newsId,createCommentDto, commentId);
+    }
+
 
     @Get("/:newsId")
     @ApiTags('comments')
@@ -46,37 +58,37 @@ export class CommentsController {
         return this.commentsService.findOne(newsId,commentId);
     }
 
-    // @Patch(':id')
-    // @ApiTags('news')
-    // @ApiBody({type:UpdateNewsDto})
-    // @ApiResponse({
-    //     status:200,
-    //     description:'update news',
-    //     type:"Новость успешно обновлена"
-    // })
-    // @ApiResponse({
-    //     status:500,
-    //     description:'incorrect id',
-    //     type:"По передаваемому ID новость не найдена"
-    // })
-    // update(@Param('id') id: number, @Body() updateNewsDto: UpdateNewsDto, @Res() response: Response) {
-    //     const res = this.commentsService.update(id, updateNewsDto);
-    //     if (res) {
-    //         return response.status(200).send('Новость успешно обновлена');
-    //     }
-    //     return response.status(500).send('По передаваемому ID новость не найдена');
-    //
-    // }
-    //
-    // @Delete(':id')
-    // @ApiTags('news')
-    // @ApiResponse({
-    //     status:200,
-    //     description:'delete news by id',
-    //     type:"is successful"
-    // })
-    // remove(@Param('id') id: number): string {
-    //     const isRemoved = this.commentsService.remove(id);
-    //     return isRemoved ? 'Новость успешно удалена' : 'Новость не найдена';
-    // }
+    @Patch('/:newsId/:commentId')
+    @ApiTags('comments')
+    @ApiBody({type:UpdateCommentDto})
+    @ApiResponse({
+        status:200,
+        description:'update comment',
+        type:"Комментарий успешно обновлен"
+    })
+    @ApiResponse({
+        status:500,
+        description:'incorrect id',
+        type:"Проверьте правильность вводимых данных"
+    })
+    update(@Param('newsId') newsId:number,@Param('commentId') commentId:number, @Body() updateCommentDto: UpdateCommentDto, @Res() response: Response) {
+        const res = this.commentsService.update(newsId,commentId, updateCommentDto);
+        if (res) {
+            return response.status(200).send(" Комментарий успешно обновлен");
+        }
+        return response.status(500).send('Не удалось обновить комментарий');
+
+    }
+
+    @Delete('/:newsId/:commentId')
+    @ApiTags('comments')
+    @ApiResponse({
+        status:200,
+        description:'delete comment',
+        type:"is successful"
+    })
+    remove(@Param('newsId') newsId:number,@Param('commentId') commentId:number): string {
+        const isRemoved = this.commentsService.remove(newsId,commentId);
+        return isRemoved ? 'Комментарий успешно удален' : 'Не удалось удалить комментарий';
+    }
 }

@@ -1,61 +1,84 @@
-import {Injectable} from '@nestjs/common';
-import {CreateNewsDto} from "../dto/create-news.dto";
-import {getRandomInt} from "../../helpers/helpers";
-import {UpdateNewsDto} from "../dto/update-news.dto";
-import {Comments, CreateCommentDto} from "./dto/create-comment.dto";
+import { Injectable } from '@nestjs/common';
+import { Comments, CreateCommentDto } from './dto/create-comment.dto';
+import { UpdateCommentDto } from './dto/update-comment.dto';
+import { getRandomInt } from '../../utils/helpers';
 
 @Injectable()
 export class CommentsService {
 
-    private readonly comments:Comments = {
-        1: [{
-            id: 123,
-            message: "Ура! Наш первый комментарий",
-            author: "Маша"
-        }]
+  private readonly comments: Comments = {
+    1: [{
+      id: 123,
+      message: 'Ура! Наш первый комментарий',
+      author: 'Маша',
+      reply:[]
+    }],
+  };
+
+  addNewsId(id:number){
+    this.comments[id]=[];
+  }
+
+  create(newsId: number, comment: CreateCommentDto,commentId:number|undefined=undefined): CreateCommentDto[] | CreateCommentDto|string {
+    const generatedId = getRandomInt(1, 10000);
+    if(commentId){
+      const parentComment=this.comments[newsId].find(comment => comment.id === commentId);
+      if (parentComment) {
+        this.comments[newsId][this.comments[newsId].indexOf(parentComment)]['reply']?.push({...comment,id:generatedId});
+        return this.findOne(newsId,commentId);
+      }
+    }
+    if (Object.keys(this.comments).indexOf(String(newsId)) !== -1) {
+      this.comments[newsId]?.push({...comment,id:generatedId,reply:[]});
+      return this.comments[newsId];
+    }
+
+    return 'Не удалось добавить комментарий';
+  }
+
+
+  findAll(newsId: string | number): CreateCommentDto[]|[] {
+    return this.comments[newsId]?this.comments[newsId]:[];
+  }
+
+  findOne(newsId: number, commentId: number): CreateCommentDto | string {
+    if (!this.comments[newsId]) {
+      return 'Новость с данным id не найдена';
+    }
+    const comment = this.comments[newsId].find(comment => comment.id === commentId);
+    if (!comment) {
+      return 'Комментарий не найден';
+    }
+    return comment;
+  }
+
+  update(newsId: number, commentId: number, updateCommentDto: UpdateCommentDto): boolean {
+    if (!this.comments[newsId]) {
+      return false;
+    }
+    let comment = this.comments[newsId].find(comment => comment.id === commentId);
+    if (!comment) {
+      return false;
+    }
+    this.comments[newsId][this.comments[newsId].indexOf(comment)] = {
+      ...comment,
+      ...updateCommentDto,
     };
+    return true;
+  }
 
-    create(newsId:string|number,comment:CreateCommentDto): CreateCommentDto[]|string {
-       if(this.comments[newsId]){
-           this.comments[newsId].push(comment);
-           return this.comments[newsId];
-       }
 
-        return "Комментарии не найдены";
+  remove(newsId: number, commentId: number): boolean {
+
+    if (!this.comments[newsId]) {
+      return false;
     }
-
-    findAll(newsId: string|number): CreateCommentDto[] {
-        return this.comments[newsId];
+    let comment = this.comments[newsId].find(comment => comment.id === commentId);
+    if (!comment) {
+      return false;
     }
+    this.comments[newsId].splice(this.comments[newsId].indexOf(comment), 1);
+    return true;
 
-    findOne(newsId:number,commentId: number): CreateCommentDto | string {
-        if(!this.comments[newsId]){
-            return "Новость с данным id не найдена";
-        }
-        const comment=this.comments[newsId].find(comment=>comment.id===commentId);
-        if(!comment){
-            return "Комментарий не найден";
-        }
-        return comment;
-    }
-
-    // update(id: number, updateNewsDto: UpdateNewsDto) {
-    //     const indexUpdateNews = id in this.news;
-    //     if (indexUpdateNews) {
-    //         this.news[id] = {
-    //             ...updateNewsDto
-    //         };
-    //         return true;
-    //     }
-    //     return false;
-    // }
-    //
-    // remove(id: number): boolean {
-    //     const indexRemoveNews = id in this.news;
-    //     if (indexRemoveNews) {
-    //         delete this.news[id];
-    //         return true;
-    //     }
-    //     return false;
-    // }
+  }
 }

@@ -1,5 +1,6 @@
 import {IsArray, IsInt, IsOptional, IsString} from "class-validator";
 import {ApiProperty, ApiPropertyOptional} from "@nestjs/swagger";
+import { CreateCommentDto } from '../comments/dto/create-comment.dto';
 
 export class CreateNewsDto {
 
@@ -22,10 +23,15 @@ export class CreateNewsDto {
     @IsOptional()
     countView?: number;
 
+    @ApiPropertyOptional({type:String})
+    @IsString()
+    @IsOptional()
+    cover?: string;
+
     @ApiPropertyOptional()
     @IsArray()
     @IsOptional()
-    comments?: [];
+    comments?: CreateCommentDto[];
 }
 
 export type NewsCreate=Record<string|number,CreateNewsDto>;
