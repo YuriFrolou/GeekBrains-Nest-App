@@ -69,7 +69,7 @@ export function generateForm(newsId, commentId) {
   return `
   <iframe width="0" height="0" border="0" name="dummyframe" id="dummyframe"></iframe> 
   <form class="upload-form" method="post" enctype="application/x-www-form-urlencoded" target="dummyframe" 
-  action="http://127.0.0.1:3000/comments/${newsId}/${commentId}"> 
+  action="https://gb-nest-app.herokuapp.com/comments/${newsId}/${commentId}"> 
   <p>Ответить на комментарий:</p> 
     <input type="text" class="form-control mb-2" name="author" placeholder="Автор">
    <textarea name="message" class="form-control mb-3" placeholder="Сообщение"></textarea> 
