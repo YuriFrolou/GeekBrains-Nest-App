@@ -38,8 +38,15 @@ ${commentsList}
 
 export function renderCommentsBlock(newsId: number, comment: CreateCommentDto, isReply): string {
   return `<div class="comment mb-2">
+   <div class="d-flex flex-wrap">
+    <div class="mb-2 me-4 rounded-circle bg-success bg-opacity-10 border-0" style="width:65px; height:65px; overflow: hidden;">
+    <img src="${comment.cover?comment.cover:'https://termosfera.su/wp-content/uploads/2022/04/2816616767_vubrbej.jpg'}" alt="" style="height:100%;">
+    </div>
+    <div>
     <h6 class="card-subtitle mb-2 text-muted">${comment.author}</h6>
     <p class="card-text">${comment.message}</p>
+    </div>
+    </div>
     <div class="reply-comments">${comment?.reply ? renderCommentsAll(newsId, comment?.reply, true) : ''}</div>
    ${!isReply ? generateForm(newsId, comment.id) : ''}
   </div>`;
