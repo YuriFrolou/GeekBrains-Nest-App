@@ -11,6 +11,7 @@ export class CommentsService {
       id: 123,
       message: 'Ура! Наш первый комментарий',
       author: 'Маша',
+      cover:'https://otkritkis.com/wp-content/uploads/2022/06/pwwhk.jpg',
       reply:[]
     }],
   };

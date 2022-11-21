@@ -1,4 +1,4 @@
-import { IsArray, IsInt, IsNumberString, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsInt, IsNotEmpty, IsNumberString, IsOptional, IsString } from 'class-validator';
 import {ApiProperty, ApiPropertyOptional} from "@nestjs/swagger";
 
 export class CreateCommentDto {
@@ -12,11 +12,17 @@ export class CreateCommentDto {
     @IsString({
         message: 'Поле message должно быть строкой'
     })
+    @IsNotEmpty()
     message: string;
 
     @ApiProperty({type: String})
     @IsString()
     author: string;
+
+    @ApiPropertyOptional({type:String})
+    @IsString()
+    @IsOptional()
+    cover?: string;
 
     @ApiPropertyOptional()
     @IsArray()
